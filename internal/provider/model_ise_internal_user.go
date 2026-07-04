@@ -129,7 +129,7 @@ func (data *InternalUser) fromBody(ctx context.Context, res gjson.Result) {
 	} else {
 		data.Email = types.StringNull()
 	}
-	if value := res.Get("InternalUser.accountNameAlias"); value.Exists() && value.Type != gjson.Null {
+	if value := res.Get("InternalUser.accountNameAlias"); value.Exists() && value.Type != gjson.Null && value.String() != "" {
 		data.AccountNameAlias = types.StringValue(value.String())
 	} else {
 		data.AccountNameAlias = types.StringNull()
@@ -195,7 +195,7 @@ func (data *InternalUser) updateFromBody(ctx context.Context, res gjson.Result) 
 	} else {
 		data.Email = types.StringNull()
 	}
-	if value := res.Get("InternalUser.accountNameAlias"); value.Exists() && !data.AccountNameAlias.IsNull() {
+	if value := res.Get("InternalUser.accountNameAlias"); value.Exists() && !data.AccountNameAlias.IsNull() && value.String() != "" {
 		data.AccountNameAlias = types.StringValue(value.String())
 	} else {
 		data.AccountNameAlias = types.StringNull()

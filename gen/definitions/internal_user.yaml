@@ -33,6 +33,7 @@ attributes:
     data_path: [InternalUser]
     type: String
     description: The Account Name Alias will be used to send email notifications about password expiration. This field is only supported from ISE 3.2.
+    normalize_empty_string: true
     example: User 1
   - model_name: enablePassword
     data_path: [InternalUser]
