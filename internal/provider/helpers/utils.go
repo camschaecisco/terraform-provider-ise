@@ -43,12 +43,29 @@ func GetStringMap(result map[string]gjson.Result) types.Map {
 // GetStringMapNonEmpty is used for ISE map attributes where the API returns
 // globally-defined-but-unassigned keys as empty strings (e.g. endpoint custom
 // attributes), and "" semantically means unset. Empty-string entries are dropped.
+// When all entries are empty the result is an empty (non-null) map.
 func GetStringMapNonEmpty(result map[string]gjson.Result) types.Map {
 	v := make(map[string]attr.Value)
 	for key, value := range result {
 		if value.String() != "" {
 			v[key] = types.StringValue(value.String())
 		}
+	}
+	return types.MapValueMust(types.StringType, v)
+}
+
+// GetStringMapNonEmptyOrNull is like GetStringMapNonEmpty but returns null when
+// all entries are empty strings — preventing drift when a config that omits the
+// attribute is compared to an ISE response where all custom attribute values are "".
+func GetStringMapNonEmptyOrNull(result map[string]gjson.Result) types.Map {
+	v := make(map[string]attr.Value)
+	for key, value := range result {
+		if value.String() != "" {
+			v[key] = types.StringValue(value.String())
+		}
+	}
+	if len(v) == 0 {
+		return types.MapNull(types.StringType)
 	}
 	return types.MapValueMust(types.StringType, v)
 }

@@ -86,10 +86,6 @@ func (r *NetworkDeviceResource) Schema(ctx context.Context, req resource.SchemaR
 			"description": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("Description").String,
 				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
 			},
 			"authentication_enable_key_wrap": schema.BoolAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("Enable key wrap").String,
@@ -102,10 +98,6 @@ func (r *NetworkDeviceResource) Schema(ctx context.Context, req resource.SchemaR
 			"authentication_encryption_key": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("Encryption key").String,
 				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
 			},
 			"authentication_encryption_key_format": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("Key input format").AddStringEnumDescription("ASCII", "HEXADECIMAL").String,
@@ -121,10 +113,6 @@ func (r *NetworkDeviceResource) Schema(ctx context.Context, req resource.SchemaR
 			"authentication_message_authenticator_code_key": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("Message authenticator code key").String,
 				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
 			},
 			"authentication_network_protocol": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("Network protocol").AddStringEnumDescription("RADIUS", "TACACS_PLUS").String,
