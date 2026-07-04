@@ -57,6 +57,7 @@ resource "ise_endpoint" "example" {
 - `mdm_serial` (String) Mdm Serial
 - `mdm_server_name` (String) Mdm Server Name
 - `portal_user` (String) Portal User
+- `profile_id` (String) Profile ID
 - `static_group_assignment_defined` (Boolean) staticGroupAssignmentDefined
   - Default value: `true`
 - `static_profile_assignment_defined` (Boolean) Static Profile Assignment Defined
@@ -65,7 +66,6 @@ resource "ise_endpoint" "example" {
 ### Read-Only
 
 - `id` (String) The id of the object
-- `profile_id` (String) Profile ID
 
 ## Import
 

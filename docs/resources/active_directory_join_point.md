@@ -82,7 +82,6 @@ resource "ise_active_directory_join_point" "example" {
 - `ad_scopes_names` (String) String that contains the names of the scopes that the active directory belongs to. Names are separated by comma.
   - Default value: `Default_Scope`
 - `aging_time` (Number) Aging Time
-  - Default value: `5`
 - `attributes` (Attributes List) List of AD attributes (see [below for nested schema](#nestedatt--attributes))
 - `auth_protection_type` (String) Enable prevent AD account lockout for WIRELESS/WIRED/BOTH
   - Choices: `WIRELESS`, `WIRED`, `BOTH`
