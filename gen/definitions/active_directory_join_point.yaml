@@ -16,6 +16,7 @@ attributes:
     type: String
     requires_replace: true
     description: Join point description
+    computed: true
     example: My AD join point
   - model_name: domain
     data_path: [ERSActiveDirectory]
@@ -159,7 +160,7 @@ attributes:
     data_path: [ERSActiveDirectory, advancedSettings]
     type: Int64
     requires_replace: true
-    default_value: 5
+    computed: true
     description: Aging Time
     example: 5
   - model_name: enableCallbackForDialinClient

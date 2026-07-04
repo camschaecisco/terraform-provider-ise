@@ -220,14 +220,14 @@ func (r *{{camelCase .Name}}Resource) Schema(ctx context.Context, req resource.S
 							{{- else if and .DefaultValue (eq .Type "String")}}
 							Default:             stringdefault.StaticString("{{.DefaultValue}}"),
 							{{- end}}
-							{{- if .RequiresReplace}}
+							{{- if or .RequiresReplace .Computed}}
 							PlanModifiers: []planmodifier.{{.Type}}{
+								{{- if .RequiresReplace}}
 								{{snakeCase .Type}}planmodifier.RequiresReplace(),
-							},
-							{{- end}}
-							{{- if .Computed}}
-							PlanModifiers: []planmodifier.{{.Type}}{
+								{{- end}}
+								{{- if .Computed}}
 								{{snakeCase .Type}}planmodifier.UseStateForUnknown(),
+								{{- end}}
 							},
 							{{- end}}
 							{{- if isNestedListSet .}}

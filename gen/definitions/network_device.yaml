@@ -15,18 +15,21 @@ attributes:
     data_path: [NetworkDevice]
     type: String
     description: Description
+    computed: true
     example: My device
   - model_name: enableKeyWrap
     data_path: [NetworkDevice, authenticationSettings]
     tf_name: authentication_enable_key_wrap
     type: Bool
     description: Enable key wrap
+    computed: true
     example: true
   - model_name: keyEncryptionKey
     data_path: [NetworkDevice, authenticationSettings]
     tf_name: authentication_encryption_key
     type: String
     description: Encryption key
+    computed: true
     example: cisco123cisco123
   - model_name: keyInputFormat
     data_path: [NetworkDevice, authenticationSettings]
@@ -34,12 +37,14 @@ attributes:
     type: String
     enum_values: [ASCII, HEXADECIMAL]
     description: Key input format
+    computed: true
     example: ASCII
   - model_name: messageAuthenticatorCodeKey
     data_path: [NetworkDevice, authenticationSettings]
     tf_name: authentication_message_authenticator_code_key
     type: String
     description: Message authenticator code key
+    computed: true
     example: cisco123cisco1235678
   - model_name: networkProtocol
     data_path: [NetworkDevice, authenticationSettings]
@@ -59,6 +64,7 @@ attributes:
     tf_name: authentication_enable_multi_secret
     type: Bool
     description: Enable multiple RADIUS shared secrets
+    computed: true
     example: true
   - model_name: secondRadiusSharedSecret
     data_path: [NetworkDevice, authenticationSettings]
@@ -71,6 +77,7 @@ attributes:
     tf_name: authentication_dtls_required
     type: Bool
     description: Enforce use of DTLS
+    computed: true
     example: true
   - model_name: coaPort
     data_path: [NetworkDevice]
