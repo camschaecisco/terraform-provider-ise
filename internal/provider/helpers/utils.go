@@ -97,6 +97,8 @@ func GetStringMapFiltered(apiResult map[string]gjson.Result, stateMap types.Map)
 // NormalizeOperator maps ISE IP-specific operator variants to their standard
 // equivalents so that conditions written with "equals" are not perpetually
 // re-applied just because ISE stores and returns the same condition as "ipEquals".
+// Only ipEquals and ipNotEquals actually exist in ISE - ipGreaterThan and ipLessThan
+// do not exist and have been removed from normalization.
 // Any operator not in the map is returned unchanged.
 func NormalizeOperator(op string) string {
 	switch op {
@@ -104,10 +106,6 @@ func NormalizeOperator(op string) string {
 		return "equals"
 	case "ipNotEquals":
 		return "notEquals"
-	case "ipGreaterThan":
-		return "greaterThan"
-	case "ipLessThan":
-		return "lessThan"
 	}
 	return op
 }

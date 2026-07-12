@@ -22,6 +22,7 @@ package provider
 //template:begin imports
 import (
 	"context"
+	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-ise/internal/provider/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -112,7 +113,14 @@ func (data *LicenseTierState) updateFromBody(ctx context.Context, res gjson.Resu
 		for _, v := range parentItems {
 			found := false
 			for ik := range keys {
-				if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+				apiValue := v.Get(keys[ik]).String()
+				stateValue := keyValues[ik]
+				// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+				if strings.Contains(keys[ik], "operator") {
+					apiValue = helpers.NormalizeOperator(apiValue)
+					stateValue = helpers.NormalizeOperator(stateValue)
+				}
+				if apiValue == stateValue {
 					found = true
 					continue
 				}

@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-ise/internal/provider/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -178,7 +179,7 @@ func (data NetworkAccessAuthenticationRule) toBody(ctx context.Context, state Ne
 		body, _ = sjson.Set(body, "rule.condition.dictionaryValue", data.ConditionDictionaryValue.ValueString())
 	}
 	if !data.ConditionOperator.IsNull() {
-		body, _ = sjson.Set(body, "rule.condition.operator", helpers.NormalizeOperator(data.ConditionOperator.ValueString()))
+		body, _ = sjson.Set(body, "rule.condition.operator", data.ConditionOperator.ValueString())
 	}
 	if len(data.Children) > 0 {
 		body, _ = sjson.Set(body, "rule.condition.children", []interface{}{})
@@ -206,7 +207,7 @@ func (data NetworkAccessAuthenticationRule) toBody(ctx context.Context, state Ne
 				itemBody, _ = sjson.Set(itemBody, "dictionaryValue", item.DictionaryValue.ValueString())
 			}
 			if !item.Operator.IsNull() {
-				itemBody, _ = sjson.Set(itemBody, "operator", helpers.NormalizeOperator(item.Operator.ValueString()))
+				itemBody, _ = sjson.Set(itemBody, "operator", item.Operator.ValueString())
 			}
 			if len(item.Children) > 0 {
 				itemBody, _ = sjson.Set(itemBody, "children", []interface{}{})
@@ -234,7 +235,7 @@ func (data NetworkAccessAuthenticationRule) toBody(ctx context.Context, state Ne
 						itemChildBody, _ = sjson.Set(itemChildBody, "dictionaryValue", childItem.DictionaryValue.ValueString())
 					}
 					if !childItem.Operator.IsNull() {
-						itemChildBody, _ = sjson.Set(itemChildBody, "operator", helpers.NormalizeOperator(childItem.Operator.ValueString()))
+						itemChildBody, _ = sjson.Set(itemChildBody, "operator", childItem.Operator.ValueString())
 					}
 					if len(childItem.Children) > 0 {
 						itemChildBody, _ = sjson.Set(itemChildBody, "children", []interface{}{})
@@ -262,7 +263,7 @@ func (data NetworkAccessAuthenticationRule) toBody(ctx context.Context, state Ne
 								itemChildChildBody, _ = sjson.Set(itemChildChildBody, "dictionaryValue", childChildItem.DictionaryValue.ValueString())
 							}
 							if !childChildItem.Operator.IsNull() {
-								itemChildChildBody, _ = sjson.Set(itemChildChildBody, "operator", helpers.NormalizeOperator(childChildItem.Operator.ValueString()))
+								itemChildChildBody, _ = sjson.Set(itemChildChildBody, "operator", childChildItem.Operator.ValueString())
 							}
 							if len(childChildItem.Children) > 0 {
 								itemChildChildBody, _ = sjson.Set(itemChildChildBody, "children", []interface{}{})
@@ -290,7 +291,7 @@ func (data NetworkAccessAuthenticationRule) toBody(ctx context.Context, state Ne
 										itemChildChildChildBody, _ = sjson.Set(itemChildChildChildBody, "dictionaryValue", childChildChildItem.DictionaryValue.ValueString())
 									}
 									if !childChildChildItem.Operator.IsNull() {
-										itemChildChildChildBody, _ = sjson.Set(itemChildChildChildBody, "operator", helpers.NormalizeOperator(childChildChildItem.Operator.ValueString()))
+										itemChildChildChildBody, _ = sjson.Set(itemChildChildChildBody, "operator", childChildChildItem.Operator.ValueString())
 									}
 									if len(childChildChildItem.Children) > 0 {
 										itemChildChildChildBody, _ = sjson.Set(itemChildChildChildBody, "children", []interface{}{})
@@ -318,7 +319,7 @@ func (data NetworkAccessAuthenticationRule) toBody(ctx context.Context, state Ne
 												itemChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildBody, "dictionaryValue", childChildChildChildItem.DictionaryValue.ValueString())
 											}
 											if !childChildChildChildItem.Operator.IsNull() {
-												itemChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildBody, "operator", helpers.NormalizeOperator(childChildChildChildItem.Operator.ValueString()))
+												itemChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildBody, "operator", childChildChildChildItem.Operator.ValueString())
 											}
 											if len(childChildChildChildItem.Children) > 0 {
 												itemChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildBody, "children", []interface{}{})
@@ -346,7 +347,7 @@ func (data NetworkAccessAuthenticationRule) toBody(ctx context.Context, state Ne
 														itemChildChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildChildBody, "dictionaryValue", childChildChildChildChildItem.DictionaryValue.ValueString())
 													}
 													if !childChildChildChildChildItem.Operator.IsNull() {
-														itemChildChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildChildBody, "operator", helpers.NormalizeOperator(childChildChildChildChildItem.Operator.ValueString()))
+														itemChildChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildChildBody, "operator", childChildChildChildChildItem.Operator.ValueString())
 													}
 													itemChildChildChildChildBody, _ = sjson.SetRaw(itemChildChildChildChildBody, "children.-1", itemChildChildChildChildChildBody)
 												}
@@ -829,7 +830,14 @@ func (data *NetworkAccessAuthenticationRule) updateFromBody(ctx context.Context,
 		for _, v := range parentItems {
 			found := false
 			for ik := range keys {
-				if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+				apiValue := v.Get(keys[ik]).String()
+				stateValue := keyValues[ik]
+				// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+				if strings.Contains(keys[ik], "operator") {
+					apiValue = helpers.NormalizeOperator(apiValue)
+					stateValue = helpers.NormalizeOperator(stateValue)
+				}
+				if apiValue == stateValue {
 					found = true
 					continue
 				}
@@ -898,7 +906,14 @@ func (data *NetworkAccessAuthenticationRule) updateFromBody(ctx context.Context,
 			for _, v := range childItems {
 				found := false
 				for ik := range keys {
-					if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+					apiValue := v.Get(keys[ik]).String()
+					stateValue := keyValues[ik]
+					// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+					if strings.Contains(keys[ik], "operator") {
+						apiValue = helpers.NormalizeOperator(apiValue)
+						stateValue = helpers.NormalizeOperator(stateValue)
+					}
+					if apiValue == stateValue {
 						found = true
 						continue
 					}
@@ -967,7 +982,14 @@ func (data *NetworkAccessAuthenticationRule) updateFromBody(ctx context.Context,
 				for _, v := range cciItems {
 					found := false
 					for ik := range keys {
-						if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+						apiValue := v.Get(keys[ik]).String()
+						stateValue := keyValues[ik]
+						// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+						if strings.Contains(keys[ik], "operator") {
+							apiValue = helpers.NormalizeOperator(apiValue)
+							stateValue = helpers.NormalizeOperator(stateValue)
+						}
+						if apiValue == stateValue {
 							found = true
 							continue
 						}
@@ -1036,7 +1058,14 @@ func (data *NetworkAccessAuthenticationRule) updateFromBody(ctx context.Context,
 					for _, v := range ccciItems {
 						found := false
 						for ik := range keys {
-							if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+							apiValue := v.Get(keys[ik]).String()
+							stateValue := keyValues[ik]
+							// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+							if strings.Contains(keys[ik], "operator") {
+								apiValue = helpers.NormalizeOperator(apiValue)
+								stateValue = helpers.NormalizeOperator(stateValue)
+							}
+							if apiValue == stateValue {
 								found = true
 								continue
 							}
@@ -1105,7 +1134,14 @@ func (data *NetworkAccessAuthenticationRule) updateFromBody(ctx context.Context,
 						for _, v := range cccciItems {
 							found := false
 							for ik := range keys {
-								if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+								apiValue := v.Get(keys[ik]).String()
+								stateValue := keyValues[ik]
+								// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+								if strings.Contains(keys[ik], "operator") {
+									apiValue = helpers.NormalizeOperator(apiValue)
+									stateValue = helpers.NormalizeOperator(stateValue)
+								}
+								if apiValue == stateValue {
 									found = true
 									continue
 								}
@@ -1174,7 +1210,14 @@ func (data *NetworkAccessAuthenticationRule) updateFromBody(ctx context.Context,
 							for _, v := range ccccciItems {
 								found := false
 								for ik := range keys {
-									if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+									apiValue := v.Get(keys[ik]).String()
+									stateValue := keyValues[ik]
+									// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+									if strings.Contains(keys[ik], "operator") {
+										apiValue = helpers.NormalizeOperator(apiValue)
+										stateValue = helpers.NormalizeOperator(stateValue)
+									}
+									if apiValue == stateValue {
 										found = true
 										continue
 									}

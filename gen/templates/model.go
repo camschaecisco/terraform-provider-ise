@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -380,7 +381,7 @@ func (data {{camelCase .Name}}) toBody(ctx context.Context, state {{camelCase .N
 	}
 	{{- else}}
 	if !data.{{toGoName .TfName}}.IsNull() {{if .ComputedWhen}}&& !data.{{toGoName .TfName}}.IsUnknown(){{end}}{{if .WriteChangesOnly}}&& data.{{toGoName .TfName}} != state.{{toGoName .TfName}}{{end}} {
-		body, _ = sjson.Set(body, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", {{if and (eq .Type "String") .NormalizeOperator}}helpers.NormalizeOperator(data.{{toGoName .TfName}}.Value{{.Type}}()){{else}}data.{{toGoName .TfName}}.Value{{.Type}}(){{end}})
+		body, _ = sjson.Set(body, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", data.{{toGoName .TfName}}.Value{{.Type}}())
 	}
 	{{- end}}
 	{{- else if isListSet .}}
@@ -406,7 +407,7 @@ func (data {{camelCase .Name}}) toBody(ctx context.Context, state {{camelCase .N
 			{{- else if not .Reference}}
 			{{- if or (eq .Type "String") (eq .Type "Int64") (eq .Type "Float64") (eq .Type "Bool")}}
 			if !item.{{toGoName .TfName}}.IsNull() {
-				itemBody, _ = sjson.Set(itemBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", {{if and (eq .Type "String") .NormalizeOperator}}helpers.NormalizeOperator(item.{{toGoName .TfName}}.Value{{.Type}}()){{else}}item.{{toGoName .TfName}}.Value{{.Type}}(){{end}})
+				itemBody, _ = sjson.Set(itemBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", item.{{toGoName .TfName}}.Value{{.Type}}())
 			}
 			{{- else if isListSet .}}
 			if !item.{{toGoName .TfName}}.IsNull() {
@@ -431,7 +432,7 @@ func (data {{camelCase .Name}}) toBody(ctx context.Context, state {{camelCase .N
 					{{- else if not .Reference}}
 					{{- if or (eq .Type "String") (eq .Type "Int64") (eq .Type "Float64") (eq .Type "Bool")}}
 					if !childItem.{{toGoName .TfName}}.IsNull() {
-						itemChildBody, _ = sjson.Set(itemChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", {{if and (eq .Type "String") .NormalizeOperator}}helpers.NormalizeOperator(childItem.{{toGoName .TfName}}.Value{{.Type}}()){{else}}childItem.{{toGoName .TfName}}.Value{{.Type}}(){{end}})
+						itemChildBody, _ = sjson.Set(itemChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", childItem.{{toGoName .TfName}}.Value{{.Type}}())
 					}
 					{{- else if isListSet .}}
 					if !childItem.{{toGoName .TfName}}.IsNull() {
@@ -456,7 +457,7 @@ func (data {{camelCase .Name}}) toBody(ctx context.Context, state {{camelCase .N
 							{{- else if not .Reference}}
 							{{- if or (eq .Type "String") (eq .Type "Int64") (eq .Type "Float64") (eq .Type "Bool")}}
 							if !childChildItem.{{toGoName .TfName}}.IsNull() {
-								itemChildChildBody, _ = sjson.Set(itemChildChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", {{if and (eq .Type "String") .NormalizeOperator}}helpers.NormalizeOperator(childChildItem.{{toGoName .TfName}}.Value{{.Type}}()){{else}}childChildItem.{{toGoName .TfName}}.Value{{.Type}}(){{end}})
+								itemChildChildBody, _ = sjson.Set(itemChildChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", childChildItem.{{toGoName .TfName}}.Value{{.Type}}())
 							}
 							{{- else if isListSet .}}
 							if !childChildItem.{{toGoName .TfName}}.IsNull() {
@@ -481,7 +482,7 @@ func (data {{camelCase .Name}}) toBody(ctx context.Context, state {{camelCase .N
 									{{- else if not .Reference}}
 									{{- if or (eq .Type "String") (eq .Type "Int64") (eq .Type "Float64") (eq .Type "Bool")}}
 									if !childChildChildItem.{{toGoName .TfName}}.IsNull() {
-										itemChildChildChildBody, _ = sjson.Set(itemChildChildChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", {{if and (eq .Type "String") .NormalizeOperator}}helpers.NormalizeOperator(childChildChildItem.{{toGoName .TfName}}.Value{{.Type}}()){{else}}childChildChildItem.{{toGoName .TfName}}.Value{{.Type}}(){{end}})
+										itemChildChildChildBody, _ = sjson.Set(itemChildChildChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", childChildChildItem.{{toGoName .TfName}}.Value{{.Type}}())
 									}
 									{{- else if isListSet .}}
 									if !childChildChildItem.{{toGoName .TfName}}.IsNull() {
@@ -506,7 +507,7 @@ func (data {{camelCase .Name}}) toBody(ctx context.Context, state {{camelCase .N
 											{{- else if not .Reference}}
 											{{- if or (eq .Type "String") (eq .Type "Int64") (eq .Type "Float64") (eq .Type "Bool")}}
 											if !childChildChildChildItem.{{toGoName .TfName}}.IsNull() {
-												itemChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", {{if and (eq .Type "String") .NormalizeOperator}}helpers.NormalizeOperator(childChildChildChildItem.{{toGoName .TfName}}.Value{{.Type}}()){{else}}childChildChildChildItem.{{toGoName .TfName}}.Value{{.Type}}(){{end}})
+												itemChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", childChildChildChildItem.{{toGoName .TfName}}.Value{{.Type}}())
 											}
 											{{- else if isListSet .}}
 											if !childChildChildChildItem.{{toGoName .TfName}}.IsNull() {
@@ -531,7 +532,7 @@ func (data {{camelCase .Name}}) toBody(ctx context.Context, state {{camelCase .N
 													{{- else if not .Reference}}
 													{{- if or (eq .Type "String") (eq .Type "Int64") (eq .Type "Float64") (eq .Type "Bool")}}
 													if !childChildChildChildChildItem.{{toGoName .TfName}}.IsNull() {
-														itemChildChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", {{if and (eq .Type "String") .NormalizeOperator}}helpers.NormalizeOperator(childChildChildChildChildItem.{{toGoName .TfName}}.Value{{.Type}}()){{else}}childChildChildChildChildItem.{{toGoName .TfName}}.Value{{.Type}}(){{end}})
+														itemChildChildChildChildChildBody, _ = sjson.Set(itemChildChildChildChildChildBody, "{{range .DataPath}}{{.}}.{{end}}{{.ModelName}}", childChildChildChildChildItem.{{toGoName .TfName}}.Value{{.Type}}())
 													}
 													{{- else if isListSet .}}
 													if !childChildChildChildChildItem.{{toGoName .TfName}}.IsNull() {
@@ -930,7 +931,14 @@ func (data *{{camelCase .Name}}) updateFromBody(ctx context.Context, res gjson.R
 		for _, v := range parentItems {
 			found := false
 			for ik := range keys {
-				if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+				apiValue := v.Get(keys[ik]).String()
+				stateValue := keyValues[ik]
+				// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+				if strings.Contains(keys[ik], "operator") {
+					apiValue = helpers.NormalizeOperator(apiValue)
+					stateValue = helpers.NormalizeOperator(stateValue)
+				}
+				if apiValue == stateValue {
 					found = true
 					continue
 				}
@@ -986,7 +994,14 @@ func (data *{{camelCase .Name}}) updateFromBody(ctx context.Context, res gjson.R
 			for _, v := range childItems {
 				found := false
 				for ik := range keys {
-					if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+					apiValue := v.Get(keys[ik]).String()
+					stateValue := keyValues[ik]
+					// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+					if strings.Contains(keys[ik], "operator") {
+						apiValue = helpers.NormalizeOperator(apiValue)
+						stateValue = helpers.NormalizeOperator(stateValue)
+					}
+					if apiValue == stateValue {
 						found = true
 						continue
 					}
@@ -1038,7 +1053,14 @@ func (data *{{camelCase .Name}}) updateFromBody(ctx context.Context, res gjson.R
 				for _, v := range cciItems {
 					found := false
 					for ik := range keys {
-						if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+						apiValue := v.Get(keys[ik]).String()
+						stateValue := keyValues[ik]
+						// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+						if strings.Contains(keys[ik], "operator") {
+							apiValue = helpers.NormalizeOperator(apiValue)
+							stateValue = helpers.NormalizeOperator(stateValue)
+						}
+						if apiValue == stateValue {
 							found = true
 							continue
 						}
@@ -1090,7 +1112,14 @@ func (data *{{camelCase .Name}}) updateFromBody(ctx context.Context, res gjson.R
 					for _, v := range ccciItems {
 						found := false
 						for ik := range keys {
-							if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+							apiValue := v.Get(keys[ik]).String()
+							stateValue := keyValues[ik]
+							// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+							if strings.Contains(keys[ik], "operator") {
+								apiValue = helpers.NormalizeOperator(apiValue)
+								stateValue = helpers.NormalizeOperator(stateValue)
+							}
+							if apiValue == stateValue {
 								found = true
 								continue
 							}
@@ -1142,7 +1171,14 @@ func (data *{{camelCase .Name}}) updateFromBody(ctx context.Context, res gjson.R
 						for _, v := range cccciItems {
 							found := false
 							for ik := range keys {
-								if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+								apiValue := v.Get(keys[ik]).String()
+								stateValue := keyValues[ik]
+								// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+								if strings.Contains(keys[ik], "operator") {
+									apiValue = helpers.NormalizeOperator(apiValue)
+									stateValue = helpers.NormalizeOperator(stateValue)
+								}
+								if apiValue == stateValue {
 									found = true
 									continue
 								}
@@ -1194,7 +1230,14 @@ func (data *{{camelCase .Name}}) updateFromBody(ctx context.Context, res gjson.R
 							for _, v := range ccccciItems {
 								found := false
 								for ik := range keys {
-									if helpers.NormalizeOperator(v.Get(keys[ik]).String()) == helpers.NormalizeOperator(keyValues[ik]) {
+									apiValue := v.Get(keys[ik]).String()
+									stateValue := keyValues[ik]
+									// Only normalize operator fields to handle ISE's ipEquals/equals conversion
+									if strings.Contains(keys[ik], "operator") {
+										apiValue = helpers.NormalizeOperator(apiValue)
+										stateValue = helpers.NormalizeOperator(stateValue)
+									}
+									if apiValue == stateValue {
 										found = true
 										continue
 									}
