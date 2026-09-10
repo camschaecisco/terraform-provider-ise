@@ -53,6 +53,7 @@ attribute:
   normalize_empty_string: bool(required=False) # Set to true to normalize an empty string ("") returned by the API to null, preventing drift when the config omits the attribute
   preserve_empty_string: bool(required=False) # Set to true to normalize null to empty string for mandatory fields that must contain "" when unset (opposite of normalize_empty_string)
   normalize_operator: bool(required=False) # Set to true to normalize IP-specific operator aliases (ipEquals -> equals, etc.) for stable key matching
+  sort_comma_separated: bool(required=False) # Set to true to sort the comma-separated values alphabetically on read, preventing drift when the API returns values in an unpredictable order
   write_changes_only: bool(required=False) # Set to true if the attribute should only be written (included in PUT payload) if it has changed
   exclude_test: bool(required=False) # Exclude attribute from example (documentation) and acceptance test
   exclude_example: bool(required=False) # Exclude attribute from acceptance test only (example/documentation is still generated)
@@ -80,3 +81,4 @@ attribute:
   test_tags: list(str(), required=False) # List of test tags, attribute is only included in acceptance tests if an environment variable with one of these tags is configured
   attributes: list(include('attribute'), required=False) # List of attributes, only relevant if type is "List" or "Set"
   filter_empty_values: bool(required=False) # Set to true to drop empty-string values when reading a Map attribute from the API response (e.g. ISE endpoint custom attributes where "" means unset)
+  case_insensitive: bool(required=False) # Set to true on a Required/non-Computed String attribute where the API always normalizes casing server-side (e.g. ISE always returns MAC addresses in uppercase); uses a custom type with semantic equality so a case-only difference from the API is not shown as a diff, instead of a plan modifier (which cannot legally rewrite a Required attribute's planned value)
