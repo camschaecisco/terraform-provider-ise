@@ -160,7 +160,7 @@ func (r *{{camelCase .Name}}Resource) Schema(ctx context.Context, req resource.S
 				PlanModifiers: []planmodifier.{{.Type}}{
 					{{- if .ComputedWhen}}
 					helpers.ComputedWhen("{{computedWhenAttr .ComputedWhen}}", {{computedWhenValue .ComputedWhen}}),
-					{{- else if isNestedList .}}
+					{{- else if .PreserveStateIfUnconfigured}}
 					helpers.PreserveStateIfUnconfigured(),
 					{{- else}}
 					{{snakeCase .Type}}planmodifier.UseStateForUnknown(),
@@ -239,7 +239,7 @@ func (r *{{camelCase .Name}}Resource) Schema(ctx context.Context, req resource.S
 							{{- end}}
 							{{- if .Computed}}
 							PlanModifiers: []planmodifier.{{.Type}}{
-								{{- if isNestedList .}}
+								{{- if .PreserveStateIfUnconfigured}}
 								helpers.PreserveStateIfUnconfigured(),
 								{{- else}}
 								{{snakeCase .Type}}planmodifier.UseStateForUnknown(),
@@ -318,7 +318,7 @@ func (r *{{camelCase .Name}}Resource) Schema(ctx context.Context, req resource.S
 										{{- end}}
 										{{- if .Computed}}
 										PlanModifiers: []planmodifier.{{.Type}}{
-											{{- if isNestedList .}}
+											{{- if .PreserveStateIfUnconfigured}}
 											helpers.PreserveStateIfUnconfigured(),
 											{{- else}}
 											{{snakeCase .Type}}planmodifier.UseStateForUnknown(),
@@ -397,7 +397,7 @@ func (r *{{camelCase .Name}}Resource) Schema(ctx context.Context, req resource.S
 													{{- end}}
 													{{- if .Computed}}
 													PlanModifiers: []planmodifier.{{.Type}}{
-														{{- if isNestedList .}}
+														{{- if .PreserveStateIfUnconfigured}}
 														helpers.PreserveStateIfUnconfigured(),
 														{{- else}}
 														{{snakeCase .Type}}planmodifier.UseStateForUnknown(),
@@ -476,7 +476,7 @@ func (r *{{camelCase .Name}}Resource) Schema(ctx context.Context, req resource.S
 																{{- end}}
 																{{- if .Computed}}
 																PlanModifiers: []planmodifier.{{.Type}}{
-																	{{- if isNestedList .}}
+																	{{- if .PreserveStateIfUnconfigured}}
 																	helpers.PreserveStateIfUnconfigured(),
 																	{{- else}}
 																	{{snakeCase .Type}}planmodifier.UseStateForUnknown(),
@@ -555,7 +555,7 @@ func (r *{{camelCase .Name}}Resource) Schema(ctx context.Context, req resource.S
 																			{{- end}}
 																			{{- if .Computed}}
 																			PlanModifiers: []planmodifier.{{.Type}}{
-																				{{- if isNestedList .}}
+																				{{- if .PreserveStateIfUnconfigured}}
 																				helpers.PreserveStateIfUnconfigured(),
 																				{{- else}}
 																				{{snakeCase .Type}}planmodifier.UseStateForUnknown(),
@@ -634,7 +634,7 @@ func (r *{{camelCase .Name}}Resource) Schema(ctx context.Context, req resource.S
 																					{{- end}}
 																					{{- if .Computed}}
 																					PlanModifiers: []planmodifier.{{.Type}}{
-																						{{- if isNestedList .}}
+																						{{- if .PreserveStateIfUnconfigured}}
 																						helpers.PreserveStateIfUnconfigured(),
 																						{{- else}}
 																						{{snakeCase .Type}}planmodifier.UseStateForUnknown(),

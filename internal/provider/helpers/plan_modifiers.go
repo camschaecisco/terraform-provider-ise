@@ -26,13 +26,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// PreserveStateIfUnconfigured returns a List plan modifier for nested list attributes
-// marked Computed: true that are managed outside the join_point resource (e.g. groups
-// managed by ise_active_directory_add_groups). When the attribute is not set in config
-// (null), it preserves the prior state value so that groups already stored in Terraform
-// state do not appear as a diff. On first create (no prior state) it returns null rather
-// than unknown, preventing the type-conversion error that listplanmodifier.UseStateForUnknown()
-// would cause when the model struct uses []T.
+// PreserveStateIfUnconfigured returns a List plan modifier for computed nested list
+// attributes that are server-managed and intentionally omitted from config. When the
+// attribute is not set in config (null), it preserves the prior state value, preventing
+// spurious diffs. On first create (no prior state) it returns null rather than unknown,
+// avoiding the type-conversion error that listplanmodifier.UseStateForUnknown() produces
+// when the model struct uses []T.
 func PreserveStateIfUnconfigured() planmodifier.List {
 	return preserveStateIfUnconfigured{}
 }

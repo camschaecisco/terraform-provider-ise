@@ -43,6 +43,7 @@ attributes:
     data_path: [ERSActiveDirectory, adgroups]
     type: List
     computed: true
+    preserve_state_if_unconfigured: true
     attributes:
       - model_name: name
         type: String
@@ -97,6 +98,7 @@ attributes:
     data_path: [ERSActiveDirectory, advancedSettings]
     type: List
     computed: true
+    preserve_state_if_unconfigured: true
     description: List of Rewrite rules
     attributes:
       - model_name: rowId

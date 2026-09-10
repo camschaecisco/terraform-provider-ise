@@ -142,8 +142,9 @@ type YamlConfigAttribute struct {
 	ResponseDataPath string                `yaml:"response_data_path"`
 	ResponseValueRegex string                `yaml:"response_value_regex"`
 	Mandatory        bool                  `yaml:"mandatory"`
-	Computed         bool                  `yaml:"computed"`
-	ComputedWhen     string                `yaml:"computed_when"`
+	Computed                   bool                  `yaml:"computed"`
+	ComputedWhen               string                `yaml:"computed_when"`
+	PreserveStateIfUnconfigured bool                 `yaml:"preserve_state_if_unconfigured"`
 	Immutable        bool                  `yaml:"immutable"`
 	WriteOnly        bool                  `yaml:"write_only"`
 	NormalizeEmptyJson   bool                  `yaml:"normalize_empty_json"`
